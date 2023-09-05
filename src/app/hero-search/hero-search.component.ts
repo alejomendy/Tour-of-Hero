@@ -8,6 +8,7 @@ import {
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
+import { LoggerService } from '../logger.service';
 
 @Component({
   selector: 'app-hero-search',
@@ -18,10 +19,14 @@ export class HeroSearchComponent implements OnInit {
   heroes$!: Observable<Hero[]>;
   private searchTerms = new Subject<string>();
 
-  constructor(private heroService: HeroService) {}
+  constructor(
+    private heroService: HeroService,
+    private logservice: LoggerService,
+    ) {}
 
   // Push a search term into the observable stream.
   search(term: string): void {
+    this.logservice.newLog('Executing search bar service')
     this.searchTerms.next(term);
   }
 

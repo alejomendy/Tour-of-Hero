@@ -6,6 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { Hero } from './hero';
 import { MessageService } from './message.service';
+import { LoggerService } from './logger.service';
 
 
 @Injectable({ providedIn: 'root' })
@@ -19,10 +20,13 @@ export class HeroService {
 
   constructor(
     private http: HttpClient,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private logservice:LoggerService
+    ) { }
 
   /** GET heroes from the server */
   getHeroes(): Observable<Hero[]> {
+    this.logservice.newLog('Executing get Heroes services')
     return this.http.get<Hero[]>(this.heroesUrl)
       .pipe(
         tap(_ => this.log('fetched heroes')),
@@ -32,6 +36,7 @@ export class HeroService {
 
   /** GET hero by id. Return `undefined` when id not found */
   getHeroNo404<Data>(id: number): Observable<Hero> {
+    this.logservice.newLog('Error hero not found')
     const url = `${this.heroesUrl}/?id=${id}`;
     return this.http.get<Hero[]>(url)
       .pipe(
@@ -46,6 +51,7 @@ export class HeroService {
 
   /** GET hero by id. Will 404 if id not found */
   getHero(id: number): Observable<Hero> {
+    this.logservice.newLog('Executing get Hero on service')
     const url = `${this.heroesUrl}/${id}`;
     return this.http.get<Hero>(url).pipe(
       tap(_ => this.log(`fetched hero id=${id}`)),
@@ -55,6 +61,7 @@ export class HeroService {
 
   /* GET heroes whose name contains search term */
   searchHeroes(term: string): Observable<Hero[]> {
+    this.logservice.newLog('Executing search Hero on service')
     if (!term.trim()) {
       // if not search term, return empty hero array.
       return of([]);
@@ -71,6 +78,7 @@ export class HeroService {
 
   /** POST: add a new hero to the server */
   addHero(hero: Hero): Observable<Hero> {
+    this.logservice.newLog('Executing addHero on service')
     return this.http.post<Hero>(this.heroesUrl, hero, this.httpOptions).pipe(
       tap((newHero: Hero) => this.log(`added hero w/ id=${newHero.id}`)),
       catchError(this.handleError<Hero>('addHero'))
@@ -79,6 +87,7 @@ export class HeroService {
 
   /** DELETE: delete the hero from the server */
   deleteHero(id: number): Observable<Hero> {
+    this.logservice.newLog('Executing deleteHero on service')
     const url = `${this.heroesUrl}/${id}`;
 
     return this.http.delete<Hero>(url, this.httpOptions).pipe(
@@ -89,6 +98,7 @@ export class HeroService {
 
   /** PUT: update the hero on the server */
   updateHero(hero: Hero): Observable<any> {
+    this.logservice.newLog('Executing updateHero on service')
     return this.http.put(this.heroesUrl, hero, this.httpOptions).pipe(
       tap(_ => this.log(`updated hero id=${hero.id}`)),
       catchError(this.handleError<any>('updateHero'))
@@ -118,6 +128,7 @@ export class HeroService {
 
   /** Log a HeroService message with the MessageService */
   private log(message: string) {
+    this.logservice.newLog('Executing private log on service')
     this.messageService.add(`HeroService: ${message}`);
   }
 }

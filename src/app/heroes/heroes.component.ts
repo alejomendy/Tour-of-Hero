@@ -11,7 +11,10 @@ import { LoggerService } from '../logger.service';
 export class HeroesComponent implements OnInit {
   heroes: Hero[] = [];
 
-  constructor(private heroService: HeroService, private logservice: LoggerService) { }
+  constructor(
+    private heroService: HeroService, 
+    private logservice: LoggerService,
+    ) { }
 
   ngOnInit(): void {
     this.getHeroes();
